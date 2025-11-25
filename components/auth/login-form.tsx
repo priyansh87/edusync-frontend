@@ -27,18 +27,37 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       return
     }
 
-    console.log("[v0] Login attempt for:", email)
     setLoading(true)
 
     setTimeout(() => {
-      console.log("[v0] Login successful, redirecting to dashboard")
-      toast({
-        title: "Login Successful!",
-        description: "Welcome back! Redirecting to dashboard...",
-      })
-      setTimeout(() => {
-        window.location.href = "/dashboard"
-      }, 1500)
+      // Get existing users
+      const existingUsersStr = localStorage.getItem("edusync_users")
+      const existingUsers = existingUsersStr ? JSON.parse(existingUsersStr) : []
+
+      // Find user
+      const user = existingUsers.find((u: any) => u.email === email && u.password === password)
+
+      if (user) {
+        // Set current user
+        localStorage.setItem("edusync_current_user", JSON.stringify(user))
+
+        toast({
+          title: "Login Successful!",
+          description: "Welcome back! Redirecting to dashboard...",
+        })
+        
+        // Redirect
+        setTimeout(() => {
+          window.location.href = "/dashboard"
+        }, 1000)
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        })
+        setLoading(false)
+      }
     }, 1000)
   }
 

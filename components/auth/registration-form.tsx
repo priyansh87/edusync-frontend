@@ -8,11 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Mail, Lock, User } from "lucide-react"
 import { RoleSelector } from "./role-selector"
 
-interface RegistrationFormProps {
-  onOTPSent: (email: string) => void
-}
-
-export function RegistrationForm({ onOTPSent }: RegistrationFormProps) {
+export function RegistrationForm() {
   const { toast } = useToast()
   const [userType, setUserType] = useState<"student" | "teacher" | "admin">("student")
   const [email, setEmail] = useState("")
@@ -22,13 +18,10 @@ export function RegistrationForm({ onOTPSent }: RegistrationFormProps) {
   const [loading, setLoading] = useState(false)
 
   const handleRoleSelect = (role: "student" | "teacher" | "admin") => {
-    console.log("[v0] RegistrationForm - Role selection handler called with:", role)
-    console.log("[v0] RegistrationForm - Current userType before setState:", userType)
     setUserType(role)
-    console.log("[v0] RegistrationForm - setUserType called with:", role)
   }
 
-  const handleSendOTP = () => {
+  const handleRegister = () => {
     if (!email || !fullName || !password || !confirmPassword) {
       toast({
         title: "Missing Information",
@@ -56,16 +49,45 @@ export function RegistrationForm({ onOTPSent }: RegistrationFormProps) {
       return
     }
 
-    console.log("[v0] Registration attempt:", { email, fullName, userType })
     setLoading(true)
 
+    // Simulate API call
     setTimeout(() => {
-      setLoading(false)
+      // Get existing users
+      const existingUsersStr = localStorage.getItem("edusync_users")
+      const existingUsers = existingUsersStr ? JSON.parse(existingUsersStr) : []
+
+      // Check if user already exists
+      if (existingUsers.some((u: any) => u.email === email)) {
+        toast({
+          title: "User Exists",
+          description: "An account with this email already exists",
+          variant: "destructive",
+        })
+        setLoading(false)
+        return
+      }
+
+      // Create new user
+      const newUser = {
+        id: Date.now().toString(),
+        email,
+        password, // In a real app, this should be hashed
+        name: fullName,
+        role: userType,
+      }
+
+      // Save to local storage
+      localStorage.setItem("edusync_users", JSON.stringify([...existingUsers, newUser]))
+      localStorage.setItem("edusync_current_user", JSON.stringify(newUser))
+
       toast({
-        title: "OTP Sent!",
-        description: "Check your email for the verification code. Use 123456 for demo.",
+        title: "Account Created!",
+        description: "Welcome to EduSync. Redirecting to dashboard...",
       })
-      onOTPSent(email)
+
+      // Redirect
+      window.location.href = "/dashboard"
     }, 1000)
   }
 
@@ -135,11 +157,11 @@ export function RegistrationForm({ onOTPSent }: RegistrationFormProps) {
         </div>
 
         <Button
-          onClick={handleSendOTP}
+          onClick={handleRegister}
           className="w-full"
           disabled={!email || !fullName || !password || !confirmPassword || loading}
         >
-          {loading ? "Creating Account..." : "Create Account & Send OTP"}
+          {loading ? "Creating Account..." : "Create Account"}
         </Button>
       </div>
     </div>
