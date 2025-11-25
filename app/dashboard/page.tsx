@@ -111,10 +111,7 @@ export default function DashboardPage() {
       { id: "assignments", label: t.assignments, icon: ClipboardList, roles: ["student", "teacher"] },
       { id: "generate-timetable", label: t.generateTimetable, icon: FileSpreadsheet, roles: ["admin"] },
       { id: "faculty", label: t.faculty, icon: UserCheck, roles: ["admin"] },
-      { id: "rooms", label: t.rooms, icon: Building, roles: ["admin"] },
       { id: "notifications", label: t.notifications, icon: Bell, roles: ["student", "teacher", "admin"] },
-      { id: "analytics", label: t.analytics, icon: TrendingUp, roles: ["admin"] },
-      { id: "settings", label: t.settings, icon: Settings, roles: ["student", "teacher", "admin"] },
     ]
 
     return [...baseItems, ...roleSpecificItems].filter((item) => item.roles.includes(user.role))
