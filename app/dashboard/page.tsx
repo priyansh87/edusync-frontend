@@ -36,8 +36,10 @@ import {
   Moon,
   Sun,
   Coffee,
+  MessageSquare,
 } from "lucide-react"
 import JCafe from "@/components/jcafe"
+import Feedback from "@/components/feedback"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -115,6 +117,7 @@ export default function DashboardPage() {
       { id: "faculty", label: t.faculty, icon: UserCheck, roles: ["admin"] },
       { id: "notifications", label: t.notifications, icon: Bell, roles: ["student", "teacher", "admin"] },
       { id: "jcafe", label: "JCafe", icon: Coffee, roles: ["student", "teacher", "admin"] },
+      { id: "feedback", label: "Feedback", icon: MessageSquare, roles: ["student", "teacher", "admin"] },
     ]
 
     return [...baseItems, ...roleSpecificItems].filter((item) => item.roles.includes(user.role))
@@ -576,12 +579,16 @@ export default function DashboardPage() {
           {/* JCafe Tab Content */}
           {activeTab === "jcafe" && <JCafe />}
 
+          {/* Feedback Tab Content */}
+          {activeTab === "feedback" && <Feedback />}
+
           {/* Other tab contents */}
           {activeTab !== "dashboard" &&
             activeTab !== "timetable" &&
             activeTab !== "generate-timetable" &&
             activeTab !== "rooms" &&
-            activeTab !== "jcafe" && (
+            activeTab !== "jcafe" &&
+            activeTab !== "feedback" && (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
                   <h3 className="text-lg font-medium mb-2">{t[activeTab as keyof typeof t]}</h3>
